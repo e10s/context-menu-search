@@ -1,0 +1,15 @@
+{
+    "manifest_version": 2,
+    "name": "Context Menu Search",
+    "description": "Context Menu Search",
+    "version": "0.0.1",
+    "background": {
+        "scripts": [
+            "background.js"
+        ]
+    },
+    "permissions": [
+        "menus",
+        "search"
+    ]
+}
