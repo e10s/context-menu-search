@@ -12,3 +12,9 @@ browser.search.get().then(engines => {
         });
     }
 });
+
+browser.menus.onClicked.addListener(info => {
+    browser.search.search({
+        query: info.selectionText, engine: info.menuItemId
+    });
+});
