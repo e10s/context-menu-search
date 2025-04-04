@@ -1,20 +1,53 @@
 "use strict";
 
-browser.search.get().then(engines => {
-    for (const engine of engines) {
-        browser.menus.create({
-            id: engine.name,
-            title: engine.name,
-            contexts: ["selection"],
-            icons: engine.favIconUrl && {
-                "32": engine.favIconUrl
-            }
-        });
-    }
+const storageKey = "items";
+
+/* Convenience functions */
+function onError(error) {
+	console.log(`Error: ${error}`);
+}
+
+function peekStorage() {
+	browser.storage.session.get(storageKey).then((a) => console.log(a[storageKey]), onError);
+}
+/* */
+
+browser.storage.onChanged.addListener(changes => {
+	if (storageKey in changes) {
+		browser.menus.removeAll().then(() => {
+			createContextMenu(changes[storageKey].newValue);
+		});
+	}
 });
 
+function createContextMenu(engines) {
+	for (const engine of engines) {
+		engine["contexts"] = ["selection"];
+		browser.menus.create(engine);
+	}
+}
+
+function initialze() {
+	browser.search.get().then(engines => {
+		const items = engines.map(engine => ({
+			id: engine.name,
+			title: engine.name,
+			icons: engine.favIconUrl && {
+				"32": engine.favIconUrl
+			}
+		}));
+
+		browser.storage.session.set(
+			{ [storageKey]: items }
+		);
+	});
+}
+
+browser.runtime.onInstalled.addListener(initialze);
+browser.runtime.onStartup.addListener(initialze);
+
 browser.menus.onClicked.addListener(info => {
-    browser.search.search({
-        query: info.selectionText, engine: info.menuItemId
-    });
+	browser.search.search({
+		query: info.selectionText, engine: info.menuItemId
+	});
 });

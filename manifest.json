@@ -1,15 +1,21 @@
 {
-    "manifest_version": 2,
-    "name": "Context Menu Search",
-    "description": "Context Menu Search",
-    "version": "0.1.0",
-    "background": {
-        "scripts": [
-            "background.js"
-        ]
-    },
-    "permissions": [
-        "menus",
-        "search"
-    ]
+	"manifest_version": 2,
+	"name": "Context Menu Search",
+	"description": "Context Menu Search",
+	"version": "0.1.0",
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "{d9e682d8-cdf4-41c6-bb64-5b0c16ddc9aa}"
+		}
+	},
+	"background": {
+		"scripts": [
+			"background.js"
+		]
+	},
+	"permissions": [
+		"menus",
+		"search",
+		"storage"
+	]
 }
