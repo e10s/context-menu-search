@@ -24,6 +24,7 @@ function createContextMenu(engines) {
 	for (const engine of engines) {
 		engine["contexts"] = ["selection"];
 		browser.menus.create(engine);
+		browser.menus.refresh();
 	}
 }
 
@@ -49,5 +50,25 @@ browser.runtime.onStartup.addListener(initialze);
 browser.menus.onClicked.addListener(info => {
 	browser.search.search({
 		query: info.selectionText, engine: info.menuItemId
+	});
+});
+
+browser.menus.onShown.addListener((info, tab) => {
+	browser.search.get().then(engines => {
+		const items = engines.map(engine => ({
+			id: engine.name,
+			title: engine.name,
+			icons: engine.favIconUrl && {
+				"32": engine.favIconUrl
+			}
+		}));
+
+		browser.storage.session.get(storageKey).then(storedData => {
+			if (JSON.stringify(storedData[storageKey]) !== JSON.stringify(items)) {
+				browser.storage.session.set(
+					{ [storageKey]: items }
+				);
+			}
+		});
 	});
 });
