@@ -8,17 +8,9 @@ function onError(error) {
 }
 
 function peekStorage() {
-	browser.storage.session.get(storageKey).then((a) => console.log(a[storageKey]), onError);
+	browser.storage.session.get(storageKey).then(storedData => console.log(storedData[storageKey]), onError);
 }
 /* */
-
-browser.storage.onChanged.addListener(changes => {
-	if (storageKey in changes) {
-		browser.menus.removeAll().then(() => {
-			createContextMenu(changes[storageKey].newValue);
-		});
-	}
-});
 
 function createContextMenu(engines) {
 	for (const engine of engines) {
@@ -41,7 +33,7 @@ function initialze() {
 		browser.storage.session.set(
 			{ [storageKey]: items }
 		);
-	});
+	}, onError);
 }
 
 browser.runtime.onInstalled.addListener(initialze);
@@ -69,6 +61,14 @@ browser.menus.onShown.addListener((info, tab) => {
 					{ [storageKey]: items }
 				);
 			}
-		});
-	});
+		}, onError);
+	}, onError);
+});
+
+browser.storage.onChanged.addListener(changes => {
+	if (storageKey in changes) {
+		browser.menus.removeAll().then(() => {
+			createContextMenu(changes[storageKey].newValue);
+		}, onError);
+	}
 });
